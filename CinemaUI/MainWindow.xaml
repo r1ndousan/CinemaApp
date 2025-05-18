@@ -1,12 +1,19 @@
 ﻿<Window x:Class="CinemaUI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CinemaUI"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+        Title="Клиенты" Height="350" Width="600">
+    <DockPanel Margin="10">
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,10">
+            <Button x:Name="RefreshBtn" Content="Обновить" Width="80" Margin="0,0,10,0" Click="RefreshBtn_Click"/>
+            <Button x:Name="AddBtn"     Content="Добавить" Width="80" Click="AddBtn_Click"/>
+        </StackPanel>
+        <DataGrid x:Name="ClientsGrid" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Id"    Binding="{Binding Id}"    Width="50"/>
+                <DataGridTextColumn Header="Name"  Binding="{Binding Name}"  Width="*"/>
+                <DataGridTextColumn Header="Login" Binding="{Binding Login}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
 </Window>
+
