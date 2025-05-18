@@ -1,46 +1,80 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
+﻿using CinemaConsole.Data;
+using CinemaConsole.Data.Entities;
+using CinemaConsole.Data.Repositories;
+using CinemaConsole.Data.Repositories.Ef;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using CinemaConsole.Data;
-using CinemaConsole.Data.Repositories; // пространство ваших репозиториев и DbContext
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;   // для GetConnectionString
 
-namespace CinemaConsole
+var builder = WebApplication.CreateBuilder(args);
+
+// ---- 1) EF Core ----
+var cs = builder.Configuration.GetConnectionString("CinemaDb");
+builder.Services.AddDbContext<CinemaDbContext>(opt =>
+    opt.UseSqlServer(cs));
+
+// ---- 2) Репозитории ----
+builder.Services.AddScoped<IClientRepository, EfClientRepository>();
+builder.Services.AddScoped<ISessionRepository, EfSessionRepository>();
+
+var app = builder.Build();
+
+// ---- 3) Клиенты ----
+app.MapGet("/clients", async (IClientRepository repo) =>
+    Results.Ok(await repo.GetAllClientsAsync()));
+
+app.MapGet("/clients/{id:int}", async (int id, IClientRepository repo) =>
+    (await repo.GetClientByIdAsync(id)) is Client c
+        ? Results.Ok(c)
+        : Results.NotFound());
+
+app.MapPost("/clients", async (Client c, IClientRepository repo) =>
 {
-    internal class Program
-    {
-        // Точка входа теперь возвращает Task, чтобы можно было использовать await
-        static async Task Main(string[] args)
-        {
-            // 1) Создаём хост, который настроит нам DI и конфиг
-            using IHost host = Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    // указываем, где искать appsettings.json
-                    config.SetBasePath(AppContext.BaseDirectory)
-                          .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-                })
-                .ConfigureServices((hostingContext, services) =>
-                {
-                    // 2) Получаем строку подключения из конфигурации
-                    string cs = hostingContext.Configuration.GetConnectionString("CinemaDb");
+    await repo.AddClientAsync(c);
+    return Results.Created($"/clients/{c.Id}", c);
+});
 
-                    // 3) Регистрируем DbContext с этой строкой
-                    services.AddDbContext<CinemaDbContext>(options =>
-                        options.UseSqlServer(cs));
+app.MapPut("/clients/{id:int}", async (int id, Client c, IClientRepository repo) =>
+{
+    c.Id = id;
+    await repo.UpdateClientAsync(c);
+    return Results.NoContent();
+});
 
-                    // 4) Регистрируем репозитории
-                    services.AddScoped<IClientRepository, ClientRepository>();
-                    services.AddScoped<ISessionRepository, SessionRepository>();
-                })
-                .Build();
+app.MapDelete("/clients/{id:int}", async (int id, IClientRepository repo) =>
+{
+    await repo.DeleteClientAsync(id);
+    return Results.NoContent();
+});
 
-            // 5) Запускаем демонстрацию (скором создадим Demo.RunAsync)
-            await Demo.RunAsync(host.Services);
-        }
-    }
+// ---- 4) Сеансы ----
+app.MapGet("/sessions", async (ISessionRepository repo) =>
+    Results.Ok(await repo.GetAllSessionsAsync()));
 
-}
+app.MapGet("/sessions/{id:int}", async (int id, ISessionRepository repo) =>
+    (await repo.GetSessionByIdAsync(id)) is Session s
+        ? Results.Ok(s)
+        : Results.NotFound());
 
+app.MapPost("/sessions", async (Session s, ISessionRepository repo) =>
+{
+    await repo.AddSessionAsync(s);
+    return Results.Created($"/sessions/{s.Id}", s);
+});
+
+app.MapPut("/sessions/{id:int}", async (int id, Session s, ISessionRepository repo) =>
+{
+    s.Id = id;
+    await repo.UpdateSessionAsync(s);
+    return Results.NoContent();
+});
+
+app.MapDelete("/sessions/{id:int}", async (int id, ISessionRepository repo) =>
+{
+    await repo.DeleteSessionAsync(id);
+    return Results.NoContent();
+});
+
+app.Run("http://localhost:5000");
