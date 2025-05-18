@@ -7,8 +7,15 @@ namespace CinemaConsole.Data
         public DbSet<Client> Clients { get; set; }
         public DbSet<Session> Sessions { get; set; }
 
-        private readonly string _connectionString;
+        private readonly string? _connectionString;
 
+        // Конструктор для рантайма через DI
+        public CinemaDbContext(DbContextOptions<CinemaDbContext> options)
+            : base(options)
+        {
+        }
+
+        // Ваш «ручной» конструктор
         public CinemaDbContext(string connectionString)
         {
             _connectionString = connectionString;
@@ -18,15 +25,15 @@ namespace CinemaConsole.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(_connectionString);
+                // если мы пришли через конструктор со строкой
+                optionsBuilder.UseSqlServer(_connectionString!);
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            // здесь в дальнейшем будут настройки сущностей (например, длина строк, связи и т.д.)
+            // Здесь ваши Fluent-конфигурации
         }
     }
 }
-
