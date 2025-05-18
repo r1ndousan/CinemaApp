@@ -17,8 +17,8 @@ namespace CinemaConsole.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Login = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -32,14 +32,20 @@ namespace CinemaConsole.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Time = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MovieTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    MovieTitle = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     AvailableSeats = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Sessions", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Clients_Login",
+                table: "Clients",
+                column: "Login",
+                unique: true);
         }
 
         /// <inheritdoc />

@@ -15,12 +15,15 @@ var cs = builder.Configuration.GetConnectionString("CinemaDb");
 builder.Services.AddDbContext<CinemaDbContext>(opt =>
     opt.UseSqlServer(cs));
 
+
+
 // ---- 2) Репозитории ----
 builder.Services.AddScoped<IClientRepository, EfClientRepository>();
 builder.Services.AddScoped<ISessionRepository, EfSessionRepository>();
 
 var app = builder.Build();
 
+app.MapGet("/", () => "API is up and running!");
 // ---- 3) Клиенты ----
 app.MapGet("/clients", async (IClientRepository repo) =>
     Results.Ok(await repo.GetAllClientsAsync()));
@@ -76,5 +79,7 @@ app.MapDelete("/sessions/{id:int}", async (int id, ISessionRepository repo) =>
     await repo.DeleteSessionAsync(id);
     return Results.NoContent();
 });
+
+
 
 app.Run("http://localhost:5000");

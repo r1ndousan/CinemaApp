@@ -25,10 +25,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.5" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.5" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.5" />
-	  <!-- EF Core + SQL Server -->
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.5" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.5" />
-	  <PackageReference Include="Microsoft.Data.SqlClient" />
+	  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
   </ItemGroup>
 
   <ItemGroup>

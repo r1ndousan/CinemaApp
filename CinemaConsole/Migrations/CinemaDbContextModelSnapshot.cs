@@ -22,7 +22,7 @@ namespace CinemaConsole.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CinemaConsole.Data.Client", b =>
+            modelBuilder.Entity("CinemaConsole.Data.Entities.Client", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,13 +30,15 @@ namespace CinemaConsole.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Email")
+                    b.Property<string>("Login")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -44,10 +46,13 @@ namespace CinemaConsole.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Clients");
+                    b.HasIndex("Login")
+                        .IsUnique();
+
+                    b.ToTable("Clients", (string)null);
                 });
 
-            modelBuilder.Entity("CinemaConsole.Data.Session", b =>
+            modelBuilder.Entity("CinemaConsole.Data.Entities.Session", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -60,14 +65,15 @@ namespace CinemaConsole.Migrations
 
                     b.Property<string>("MovieTitle")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
-                    b.Property<DateTime>("Time")
+                    b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Sessions");
+                    b.ToTable("Sessions", (string)null);
                 });
 #pragma warning restore 612, 618
         }
