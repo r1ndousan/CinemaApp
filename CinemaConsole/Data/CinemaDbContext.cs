@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CinemaConsole.Data.Entities;
+using CinemaConsole.Data.IEntityTypeConfiguration;
+using Microsoft.EntityFrameworkCore;
 
 namespace CinemaConsole.Data
 {
@@ -32,8 +34,8 @@ namespace CinemaConsole.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-            // Здесь ваши Fluent-конфигурации
+            modelBuilder.ApplyConfiguration(new ClientConfiguration());
+            modelBuilder.ApplyConfiguration(new SessionConfiguration());
         }
     }
 }
