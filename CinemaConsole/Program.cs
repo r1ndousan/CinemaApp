@@ -3,12 +3,13 @@ using CinemaConsole.Data;
 using CinemaConsole.Data.Entities;
 using CinemaConsole.Data.Repositories;
 using CinemaConsole.Data.Repositories.Ef;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;   // для GetConnectionString
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using CinemaConsole.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,14 +27,38 @@ builder.Services.AddScoped<CommandDispatcher>();
 builder.Services.AddScoped<IUserRepository, EfUserRepository>();
 builder.Services.AddScoped<IBookingRepository, EfBookingRepository>();
 
+// JWT‑конфиг
+var jwt = builder.Configuration.GetSection("Jwt");
+var key = Encoding.UTF8.GetBytes(jwt["Key"]!);
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwt["Issuer"],
+        ValidAudience = jwt["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+});
 
 var app = builder.Build();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
+
 app.MapGet("/", () => "API is up and running!");
 // ---- 3) Клиенты ----
-app.MapGet("/clients", async (IClientRepository repo) =>
-    Results.Ok(await repo.GetAllClientsAsync()));
+//app.MapGet("/clients", async (IClientRepository repo) =>
+//    Results.Ok(await repo.GetAllClientsAsync()));
 
 app.MapGet("/clients/{id:int}", async (int id, IClientRepository repo) =>
     (await repo.GetClientByIdAsync(id)) is Client c
@@ -60,8 +85,8 @@ app.MapDelete("/clients/{id:int}", async (int id, IClientRepository repo) =>
 });
 
 // ---- 4) Сеансы ----
-app.MapGet("/sessions", async (ISessionRepository repo) =>
-    Results.Ok(await repo.GetAllSessionsAsync()));
+//app.MapGet("/sessions", async (ISessionRepository repo) =>
+ //   Results.Ok(await repo.GetAllSessionsAsync()));
 
 app.MapGet("/sessions/{id:int}", async (int id, ISessionRepository repo) =>
     (await repo.GetSessionByIdAsync(id)) is Session s
@@ -88,8 +113,8 @@ app.MapDelete("/sessions/{id:int}", async (int id, ISessionRepository repo) =>
 });
 
 // --- Users ---
-app.MapGet("/users", async (IUserRepository repo) =>
-    Results.Ok(await repo.GetAllUsersAsync()));
+//app.MapGet("/users", async (IUserRepository repo) =>
+ //   Results.Ok(await repo.GetAllUsersAsync()));
 
 app.MapGet("/users/{id:int}", async (int id, IUserRepository repo) =>
     (await repo.GetUserByIdAsync(id)) is User u
@@ -105,8 +130,8 @@ app.MapPost("/users", async (User u, IUserRepository repo, CommandDispatcher cmd
 
 
 // --- Bookings ---
-app.MapGet("/bookings", async (IBookingRepository repo) =>
-    Results.Ok(await repo.GetAllBookingsAsync()));
+//app.MapGet("/bookings", async (IBookingRepository repo) =>
+//    Results.Ok(await repo.GetAllBookingsAsync()));
 
 app.MapGet("/bookings/{id:int}", async (int id, IBookingRepository repo) =>
     (await repo.GetBookingByIdAsync(id)) is Booking b
@@ -122,6 +147,49 @@ app.MapPost("/bookings", async (Booking b, IBookingRepository repo, CommandDispa
 
 
 // PUT и DELETE — аналогично
+
+
+// POST /auth/register
+app.MapPost("/auth/register", async (User u, IUserRepository repo) =>
+{
+    // здесь вы можете добавить логику: хешировать пароль через BCrypt
+    await repo.AddUserAsync(u);
+    return Results.Created($"/users/{u.Id}", u);
+});
+
+// POST /auth/login
+app.MapPost("/auth/login", async (LoginRequest creds, IUserRepository repo) =>
+{
+    var user = await repo.GetUserByUsernameAsync(creds.Username);
+    if (user is null || user.PasswordHash != creds.Password)
+        return Results.Unauthorized();
+
+    var claims = new[]
+    {
+        new Claim(ClaimTypes.Name, user.Username),
+        new Claim(ClaimTypes.Role, user.Role)
+    };
+
+    var jwtSection = builder.Configuration.GetSection("Jwt");
+    var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["Key"]!));
+    var token = new JwtSecurityToken(
+        issuer: jwtSection["Issuer"],
+        audience: jwtSection["Audience"],
+        claims: claims,
+        expires: DateTime.UtcNow.AddMinutes(double.Parse(jwtSection["ExpireMinutes"]!)),
+        signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
+    );
+
+    var jwtString = new JwtSecurityTokenHandler().WriteToken(token);
+    return Results.Ok(new { token = jwtString });
+});
+
+app.MapGet("/clients", async (IClientRepository repo) =>
+        Results.Ok(await repo.GetAllClientsAsync())).RequireAuthorization();
+app.MapGet("/sessions", async (ISessionRepository repo) =>
+        Results.Ok(await repo.GetAllSessionsAsync())).RequireAuthorization();
+app.MapGet("/bookings", async (IBookingRepository repo) =>
+        Results.Ok(await repo.GetAllBookingsAsync())).RequireAuthorization();
 
 
 app.Run("http://localhost:5000");

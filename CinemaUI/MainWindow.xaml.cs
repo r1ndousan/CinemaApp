@@ -20,7 +20,17 @@ namespace CinemaUI
         {
             InitializeComponent();
 
-            var api = new ApiClient();
+            var auth = new AuthService(new ApiClient());
+            var loginWin = new LoginWindow(auth);
+            if (loginWin.ShowDialog() != true)
+            {
+                Close();
+                return;
+            }
+
+            var jwt = loginWin.JwtToken!;
+            var api = new ApiClient(jwt);
+
             _clientService = new ClientService(api);
             _sessionService = new SessionService(api);
             _userService = new UserService(api);
