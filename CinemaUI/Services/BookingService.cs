@@ -10,7 +10,10 @@ namespace CinemaUI.Services
     public class BookingService
     {
         private readonly HttpClient _http;
-        public BookingService(ApiClient api) => _http = api.Client;
+        public BookingService(ApiClient api)
+        {
+            _http = api.Client;
+        }
 
         public Task<List<BookingDto>> GetAllAsync() =>
             _http.GetFromJsonAsync<List<BookingDto>>("bookings")!;

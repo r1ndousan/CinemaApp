@@ -11,7 +11,6 @@ namespace CinemaConsole.Commands
 {
     public class AddUserCommand : ICommand
     {
-        private readonly IClientRepository _clientRepo; // клиентские профили всё ещё тут
         private readonly IUserRepository _userRepo;
         private readonly User _user;
 

@@ -42,26 +42,7 @@
                 </DockPanel>
             </TabItem>
 
-
-        <TabItem Header="Пользователи">
-            <DockPanel Margin="5">
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,5">
-                    <Button Content="Обновить" Click="RefreshUsers_Click" Margin="0,0,5,0"/>
-                    <Button Content="Добавить"  Click="AddUser_Click" Margin="0,0,5,0"/>
-                    <Button Content="Изменить"  Click="EditUser_Click"   Margin="0,0,280,0"/>
-                    <Button Content="Удалить"   Click="DeleteUser_Click"/>
-                    </StackPanel>
-                <DataGrid x:Name="UsersGrid" AutoGenerateColumns="False" IsReadOnly="True">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Id"       Binding="{Binding Id}"       Width="50"/>
-                        <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="*"/>
-                        <DataGridTextColumn Header="Role"     Binding="{Binding Role}"     Width="100"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </DockPanel>
-        </TabItem>
-
-        <TabItem Header="Бронирования">
+            <TabItem Header="Бронирования">
             <DockPanel Margin="5">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,5">
                     <Button Content="Обновить" Click="RefreshBookings_Click" Margin="0,0,5,0"/>

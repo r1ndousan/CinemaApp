@@ -41,5 +41,7 @@ namespace CinemaConsole.Data.Repositories
         /// Найти клиента по логину.
         /// </summary>
         Task<Client?> GetClientByLoginAsync(string login);
+        Task<IReadOnlyList<Client>> FindClientsAsync(string? nameFilter, string? loginFilter);
+
     }
 }

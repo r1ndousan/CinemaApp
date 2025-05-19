@@ -16,31 +16,30 @@ using CinemaUI.Models;
 
 namespace CinemaUI
 {
-    public partial class LoginWindow : Window
+    public partial class LoginForm : Window
     {
         private readonly AuthService _auth;
-
         public string? JwtToken { get; private set; }
 
-        public LoginWindow(AuthService auth)
+        public LoginForm(AuthService authService)
         {
             InitializeComponent();
-            _auth = auth;
+            _auth = authService;
         }
 
         private async void Login_Click(object sender, RoutedEventArgs e)
         {
-            var username = UsernameBox.Text;
-            var password = PasswordBox.Password;  // instance, не статик
+            string login = UsernameBox.Text;
+            string pass = PasswordBox.Password;
 
-            var res = await _auth.LoginAsync(username, password);
-            if (res == null)
+            var result = await _auth.LoginAsync(login, pass);
+            if (result is null)
             {
-                MessageBox.Show("Неправильные учётные данные");
+                MessageBox.Show("Неверный логин или пароль.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            JwtToken = res.Token;
+            JwtToken = result.Token;
             DialogResult = true;
         }
     }

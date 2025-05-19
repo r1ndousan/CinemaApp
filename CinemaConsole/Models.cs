@@ -12,4 +12,9 @@ namespace CinemaConsole.Models
         public string Username { get; set; } = "";
         public string Password { get; set; } = "";
     }
+    public class AuthRequestDto
+    {
+        public string Username { get; set; } = "";
+        public string Password { get; set; } = "";
+    }
 }

@@ -53,6 +53,17 @@ namespace CinemaConsole.Data.Repositories.Ef
             _ctx.Clients.Update(entity);
             await _ctx.SaveChangesAsync();
         }
+        public async Task<IReadOnlyList<Client>> FindClientsAsync(string? nameFilter, string? loginFilter)
+        {
+            IQueryable<Client> q = _ctx.Clients.AsNoTracking();
 
+            if (!string.IsNullOrWhiteSpace(nameFilter))
+                q = q.Where(c => c.Name.Contains(nameFilter));
+
+            if (!string.IsNullOrWhiteSpace(loginFilter))
+                q = q.Where(c => c.Login.Contains(loginFilter));
+
+            return await q.ToListAsync();
+        }
     }
 }

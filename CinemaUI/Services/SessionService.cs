@@ -11,7 +11,10 @@ namespace CinemaUI.Services
     {
         private readonly HttpClient _http;
 
-        public SessionService(ApiClient api) => _http = api.Client;
+        public SessionService(ApiClient api)
+        {
+            _http = api.Client;
+        }
 
         public Task<List<SessionDto>> GetAllAsync() =>
             _http.GetFromJsonAsync<List<SessionDto>>("sessions")!;

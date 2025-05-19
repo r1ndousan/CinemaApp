@@ -16,30 +16,22 @@ namespace CinemaUI
         private readonly UserService _userService;
         private readonly BookingService _bookingService;
 
-        public MainWindow()
+        public MainWindow() : this(string.Empty)
+        {
+        }
+        // Новый конструктор, принимающий JWT
+        public MainWindow(string jwt)
         {
             InitializeComponent();
 
-            var auth = new AuthService(new ApiClient());
-            var loginWin = new LoginWindow(auth);
-            if (loginWin.ShowDialog() != true)
-            {
-                Close();
-                return;
-            }
-
-            var jwt = loginWin.JwtToken!;
             var api = new ApiClient(jwt);
-
             _clientService = new ClientService(api);
             _sessionService = new SessionService(api);
             _userService = new UserService(api);
             _bookingService = new BookingService(api);
 
-            // первичная загрузка
             _ = LoadClientsAsync();
             _ = LoadSessionsAsync();
-            _ = LoadUsersAsync();
             _ = LoadBookingsAsync();
         }
 
@@ -57,11 +49,7 @@ namespace CinemaUI
             SessionsGrid.ItemsSource = items;
         }
 
-        private async System.Threading.Tasks.Task LoadUsersAsync()
-        {
-            var items = await _userService.GetAllAsync();
-            UsersGrid.ItemsSource = items;
-        }
+
 
         private async System.Threading.Tasks.Task LoadBookingsAsync()
         {
@@ -73,7 +61,7 @@ namespace CinemaUI
 
         private async void RefreshClients_Click(object s, RoutedEventArgs e) => await LoadClientsAsync();
         private async void RefreshSessions_Click(object s, RoutedEventArgs e) => await LoadSessionsAsync();
-        private async void RefreshUsers_Click(object s, RoutedEventArgs e) => await LoadUsersAsync();
+
         private async void RefreshBookings_Click(object s, RoutedEventArgs e) => await LoadBookingsAsync();
 
         // ==== Add кнопки ====
@@ -97,12 +85,6 @@ namespace CinemaUI
             await LoadSessionsAsync();
         }
 
-        private async void AddUser_Click(object s, RoutedEventArgs e)
-        {
-            var dto = new UserDto { Username = "newuser", PasswordHash = "hash", Role = "User" };
-            await _userService.CreateAsync(dto);
-            await LoadUsersAsync();
-        }
 
         private async void AddBooking_Click(object s, RoutedEventArgs e)
         {
@@ -199,25 +181,7 @@ namespace CinemaUI
             await _sessionService.DeleteAsync(sel.Id);
             await LoadSessionsAsync();
         }
-
-        private async void EditUser_Click(object s, RoutedEventArgs e)
-        {
-            if (UsersGrid.SelectedItem is not UserDto sel) return;
-            var copy = new UserDto { Id = sel.Id, Username = sel.Username, PasswordHash = sel.PasswordHash, Role = sel.Role };
-            var dlg = new UserEditWindow(copy);
-            if (dlg.ShowDialog() == true)
-            {
-                await _userService.UpdateAsync(copy.Id, copy);
-                await LoadUsersAsync();
-            }
-        }
-
-        private async void DeleteUser_Click(object s, RoutedEventArgs e)
-        {
-            if (UsersGrid.SelectedItem is not UserDto sel) return;
-            await _userService.DeleteAsync(sel.Id);
-            await LoadUsersAsync();
-        }
+        
 
         private async void EditBooking_Click(object s, RoutedEventArgs e)
         {

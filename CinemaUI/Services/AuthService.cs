@@ -16,9 +16,16 @@ namespace CinemaUI.Services
 
         public async Task<AuthResponseDto?> LoginAsync(string username, string password)
         {
-            var resp = await _http.PostAsJsonAsync("auth/login", new AuthRequestDto { Username = username, Password = password });
+            var req = new AuthRequestDto { Username = username, Password = password };
+            var resp = await _http.PostAsJsonAsync("auth/login", req);
             if (!resp.IsSuccessStatusCode) return null;
             return await resp.Content.ReadFromJsonAsync<AuthResponseDto>();
+        }
+
+        public Task<HttpResponseMessage> RegisterAsync(string username, string password)
+        {
+            var req = new AuthRequestDto { Username = username, Password = password };
+            return _http.PostAsJsonAsync("auth/register", req);
         }
     }
 }

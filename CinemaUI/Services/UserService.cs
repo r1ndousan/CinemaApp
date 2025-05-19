@@ -11,7 +11,10 @@ namespace CinemaUI.Services
         public class UserService
         {
             private readonly HttpClient _http;
-            public UserService(ApiClient api) => _http = api.Client;
+            public UserService(ApiClient api)
+            {
+                _http = api.Client;
+            }
 
             public Task<List<UserDto>> GetAllAsync() =>
                 _http.GetFromJsonAsync<List<UserDto>>("users")!;

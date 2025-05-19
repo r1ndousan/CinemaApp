@@ -10,7 +10,10 @@ namespace CinemaUI.Services
     {
         private readonly HttpClient _http;
 
-        public ClientService(ApiClient api) => _http = api.Client;
+        public ClientService(ApiClient api)
+        {
+            _http = api.Client;
+        }
 
         public Task<List<ClientDto>> GetAllAsync() =>
             _http.GetFromJsonAsync<List<ClientDto>>("clients")!;

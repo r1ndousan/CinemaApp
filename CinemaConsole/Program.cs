@@ -13,20 +13,6 @@ using CinemaConsole.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ---- 1) EF Core ----
-var cs = builder.Configuration.GetConnectionString("CinemaDb");
-builder.Services.AddDbContext<CinemaDbContext>(opt =>
-    opt.UseSqlServer(cs));
-
-
-
-// ---- 2) Репозитории ----
-builder.Services.AddScoped<IClientRepository, EfClientRepository>();
-builder.Services.AddScoped<ISessionRepository, EfSessionRepository>();
-builder.Services.AddScoped<CommandDispatcher>();
-builder.Services.AddScoped<IUserRepository, EfUserRepository>();
-builder.Services.AddScoped<IBookingRepository, EfBookingRepository>();
-
 // JWT‑конфиг
 var jwt = builder.Configuration.GetSection("Jwt");
 var key = Encoding.UTF8.GetBytes(jwt["Key"]!);
@@ -49,10 +35,31 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddAuthorization();
+// ---- 1) EF Core ----
+var cs = builder.Configuration.GetConnectionString("CinemaDb");
+builder.Services.AddDbContext<CinemaDbContext>(opt =>
+    opt.UseSqlServer(cs));
+
+
+
+// ---- 2) Репозитории ----
+builder.Services.AddScoped<IClientRepository, EfClientRepository>();
+builder.Services.AddScoped<ISessionRepository, EfSessionRepository>();
+builder.Services.AddScoped<CommandDispatcher>();
+builder.Services.AddScoped<IUserRepository, EfUserRepository>();
+builder.Services.AddScoped<IBookingRepository, EfBookingRepository>();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Debug);
+
+
+
 var app = builder.Build();
 
 app.UseAuthentication();
-app.UseAuthorization();
+
 
 
 app.MapGet("/", () => "API is up and running!");
@@ -150,12 +157,24 @@ app.MapPost("/bookings", async (Booking b, IBookingRepository repo, CommandDispa
 
 
 // POST /auth/register
-app.MapPost("/auth/register", async (User u, IUserRepository repo) =>
+// РЕГИСТРАЦИЯ
+app.MapPost("/auth/register", async (AuthRequestDto dto, IUserRepository repo) =>
 {
-    // здесь вы можете добавить логику: хешировать пароль через BCrypt
-    await repo.AddUserAsync(u);
-    return Results.Created($"/users/{u.Id}", u);
+    // хешируем пароль (рекомендуется)
+    dto.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+
+    var user = new User
+    {
+        Username = dto.Username,
+        PasswordHash = dto.Password,
+        Role = "User"
+    };
+
+    await repo.AddUserAsync(user);
+    return Results.Created($"/users/{user.Id}", new { user.Id, user.Username });
 });
+
+app.UseAuthorization();
 
 // POST /auth/login
 app.MapPost("/auth/login", async (LoginRequest creds, IUserRepository repo) =>

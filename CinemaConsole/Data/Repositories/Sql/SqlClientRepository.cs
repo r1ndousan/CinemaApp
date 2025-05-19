@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;      // <-- пакет Microsoft.Data.SqlClient
 using CinemaConsole.Data.Entities;
+using System.Text;
 
 namespace CinemaConsole.Data.Repositories.Sql
 {
@@ -25,7 +26,42 @@ namespace CinemaConsole.Data.Repositories.Sql
             await conn.OpenAsync();
             await cmd.ExecuteNonQueryAsync();
         }
+        public async Task<IReadOnlyList<Client>> FindClientsAsync(string? nameFilter, string? loginFilter)
+        {
+            var sql = new StringBuilder("SELECT Id, Name, Login, PasswordHash FROM Clients WHERE 1=1");
+            var parameters = new List<SqlParameter>();
 
+            if (!string.IsNullOrWhiteSpace(nameFilter))
+            {
+                sql.Append(" AND Name LIKE @name");
+                parameters.Add(new SqlParameter("@name", $"%{nameFilter}%"));
+            }
+            if (!string.IsNullOrWhiteSpace(loginFilter))
+            {
+                sql.Append(" AND Login LIKE @login");
+                parameters.Add(new SqlParameter("@login", $"%{loginFilter}%"));
+            }
+
+            await using var conn = new SqlConnection(_cs);
+            await using var cmd = new SqlCommand(sql.ToString(), conn);
+            cmd.Parameters.AddRange(parameters.ToArray());
+
+            await conn.OpenAsync();
+            var list = new List<Client>();
+            await using var rdr = await cmd.ExecuteReaderAsync();
+            while (await rdr.ReadAsync())
+            {
+                list.Add(new Client
+                {
+                    Id = rdr.GetInt32(0),
+                    Name = rdr.GetString(1),
+                    Login = rdr.GetString(2),
+                    PasswordHash = rdr.GetString(3)
+                });
+            }
+
+            return list;
+        }
         public async Task<Client?> GetClientByIdAsync(int id)
         {
             const string sql = "SELECT Id, Name, Login, PasswordHash FROM Clients WHERE Id = @Id;";
