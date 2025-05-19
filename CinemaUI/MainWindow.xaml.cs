@@ -12,7 +12,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CinemaUI.Models;
 using CinemaUI.Services;
-using System.Threading.Tasks;
+using CinemaUI.Services.CinemaUI.Services;
+
 
 namespace CinemaUI
 {
@@ -20,6 +21,9 @@ namespace CinemaUI
     {
         private readonly ClientService _clientService;
         private readonly SessionService _sessionService;
+        private readonly UserService _userService;
+        private readonly BookingService _bookingService;
+
 
         public MainWindow()
         {
@@ -27,7 +31,11 @@ namespace CinemaUI
             var api = new ApiClient();
             _clientService = new ClientService(api);
             _sessionService = new SessionService(api);
+            _userService = new UserService(api);
+            _bookingService = new BookingService(api);
 
+            _ = LoadUsersAsync();
+            _ = LoadBookingsAsync();
             _ = LoadClientsAsync();
             _ = LoadSessionsAsync();
         }
@@ -43,6 +51,12 @@ namespace CinemaUI
             var list = await _clientService.GetAllAsync();
             ClientsGrid.ItemsSource = list;
         }
+
+        private async Task LoadUsersAsync()
+    => UsersGrid.ItemsSource = await _userService.GetAllAsync();
+
+        private async Task LoadBookingsAsync()
+            => BookingsGrid.ItemsSource = await _bookingService.GetAllAsync();
 
         private async void RefreshBtn_Click(object sender, RoutedEventArgs e)
             => await LoadClientsAsync();
@@ -82,6 +96,32 @@ namespace CinemaUI
             await _sessionService.CreateAsync(dto);
             await LoadSessionsAsync();
         }
+        private async void RefreshUsers_Click(object s, RoutedEventArgs e)
+    => await LoadUsersAsync();
+
+        private async void AddUser_Click(object s, RoutedEventArgs e)
+        {
+            var dto = new UserDto { Username = "test", PasswordHash = "hash", Role = "User" };
+            await _userService.CreateAsync(dto);
+            await LoadUsersAsync();
+        }
+
+        private async void RefreshBookings_Click(object s, RoutedEventArgs e)
+            => await LoadBookingsAsync();
+
+        private async void AddBooking_Click(object s, RoutedEventArgs e)
+        {
+            var dto = new BookingDto
+            {
+                ClientId = 1,
+                SessionId = 1,
+                SeatsBooked = 2,
+                BookingTime = DateTime.Now
+            };
+            await _bookingService.CreateAsync(dto);
+            await LoadBookingsAsync();
+        }
+
     }
 
 }

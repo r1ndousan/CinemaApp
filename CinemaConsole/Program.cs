@@ -1,4 +1,5 @@
-﻿using CinemaConsole.Data;
+﻿using CinemaConsole.Commands;
+using CinemaConsole.Data;
 using CinemaConsole.Data.Entities;
 using CinemaConsole.Data.Repositories;
 using CinemaConsole.Data.Repositories.Ef;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;   // для GetConnectionString
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,11 @@ builder.Services.AddDbContext<CinemaDbContext>(opt =>
 // ---- 2) Репозитории ----
 builder.Services.AddScoped<IClientRepository, EfClientRepository>();
 builder.Services.AddScoped<ISessionRepository, EfSessionRepository>();
+builder.Services.AddScoped<CommandDispatcher>();
+builder.Services.AddScoped<IUserRepository, EfUserRepository>();
+builder.Services.AddScoped<IBookingRepository, EfBookingRepository>();
+
+
 
 var app = builder.Build();
 
@@ -80,6 +87,41 @@ app.MapDelete("/sessions/{id:int}", async (int id, ISessionRepository repo) =>
     return Results.NoContent();
 });
 
+// --- Users ---
+app.MapGet("/users", async (IUserRepository repo) =>
+    Results.Ok(await repo.GetAllUsersAsync()));
+
+app.MapGet("/users/{id:int}", async (int id, IUserRepository repo) =>
+    (await repo.GetUserByIdAsync(id)) is User u
+        ? Results.Ok(u)
+        : Results.NotFound());
+
+app.MapPost("/users", async (User u, IUserRepository repo, CommandDispatcher cmdDisp) =>
+{
+    var cmd = new AddUserCommand(repo, u);
+    await cmdDisp.DispatchAsync(cmd);
+    return Results.Created($"/users/{u.Id}", u);
+});
+
+
+// --- Bookings ---
+app.MapGet("/bookings", async (IBookingRepository repo) =>
+    Results.Ok(await repo.GetAllBookingsAsync()));
+
+app.MapGet("/bookings/{id:int}", async (int id, IBookingRepository repo) =>
+    (await repo.GetBookingByIdAsync(id)) is Booking b
+        ? Results.Ok(b)
+        : Results.NotFound());
+
+app.MapPost("/bookings", async (Booking b, IBookingRepository repo, CommandDispatcher cmdDisp) =>
+{
+    var cmd = new AddBookingCommand(repo, b);
+    await cmdDisp.DispatchAsync(cmd);
+    return Results.Created($"/bookings/{b.Id}", b);
+});
+
+
+// PUT и DELETE — аналогично
 
 
 app.Run("http://localhost:5000");

@@ -14,7 +14,7 @@
                     <DataGrid x:Name="ClientsGrid" AutoGenerateColumns="False" IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Id"    Binding="{Binding Id}"    Width="50"/>
-                            <DataGridTextColumn Header="Name"  Binding="{Binding Name}"  Width="*"/>
+                            <DataGridTextColumn Header="Имя"  Binding="{Binding Name}"  Width="*"/>
                             <DataGridTextColumn Header="Login" Binding="{Binding Login}" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
@@ -30,13 +30,48 @@
                     <DataGrid x:Name="SessionsGrid" AutoGenerateColumns="False" IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Id"             Binding="{Binding Id}"             Width="50"/>
-                            <DataGridTextColumn Header="Начало"         Binding="{Binding StartTime}"      Width="150"/>
+                            <DataGridTextColumn Header="Дата и время"         Binding="{Binding StartTime}"      Width="150"/>
                             <DataGridTextColumn Header="Название фильма" Binding="{Binding MovieTitle}"    Width="*"/>
                             <DataGridTextColumn Header="Свободных мест"  Binding="{Binding AvailableSeats}" Width="100"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </DockPanel>
             </TabItem>
+
+
+        <TabItem Header="Пользователи">
+            <DockPanel Margin="5">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,5">
+                    <Button Content="Обновить" Click="RefreshUsers_Click" Margin="0,0,5,0"/>
+                    <Button Content="Добавить"  Click="AddUser_Click"/>
+                </StackPanel>
+                <DataGrid x:Name="UsersGrid" AutoGenerateColumns="False" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Id"       Binding="{Binding Id}"       Width="50"/>
+                        <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="*"/>
+                        <DataGridTextColumn Header="Role"     Binding="{Binding Role}"     Width="100"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </TabItem>
+
+        <TabItem Header="Бронирования">
+            <DockPanel Margin="5">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,5">
+                    <Button Content="Обновить" Click="RefreshBookings_Click" Margin="0,0,5,0"/>
+                    <Button Content="Добавить"  Click="AddBooking_Click"/>
+                </StackPanel>
+                <DataGrid x:Name="BookingsGrid" AutoGenerateColumns="False" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Id"          Binding="{Binding Id}"          Width="50"/>
+                        <DataGridTextColumn Header="Id клиента"    Binding="{Binding ClientId}"    Width="75"/>
+                        <DataGridTextColumn Header="Id сеанса"   Binding="{Binding SessionId}"   Width="75"/>
+                        <DataGridTextColumn Header="Забронированно мест" Binding="{Binding SeatsBooked}" Width="150"/>
+                        <DataGridTextColumn Header="Время брони"        Binding="{Binding BookingTime}" Width="150"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </TabItem>
         </TabControl>
     </DockPanel>
 </Window>

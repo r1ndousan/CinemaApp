@@ -6,13 +6,7 @@ using System.Threading.Tasks;
 
 namespace CinemaUI.Models
 {
-    public class ClientDto
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = "";
-        public string Login { get; set; } = "";
-        public string PasswordHash { get; set; } = "";
-    }
+
     public class SessionDto
     {
         public int Id { get; set; }
