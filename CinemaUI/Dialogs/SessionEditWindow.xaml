@@ -1,7 +1,7 @@
 ﻿<Window x:Class="CinemaUI.Dialogs.SessionEditWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Редактировать сеанс" Height="220" Width="350">
+        Title="Редактировать сеанс" Height="316" Width="372">
     <StackPanel Margin="10" VerticalAlignment="Center">
         <TextBlock Text="Дата:"/>
         <DatePicker x:Name="DatePicker" Margin="0,0,0,5"/>

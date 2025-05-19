@@ -1,20 +1,11 @@
-﻿using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Windows;
+using CinemaUI.Dialogs;
 using CinemaUI.Models;
 using CinemaUI.Services;
 using CinemaUI.Services.CinemaUI.Services;
-using CinemaUI.Dialogs;
-
+using Microsoft.VisualBasic;
 
 namespace CinemaUI
 {
@@ -25,115 +16,140 @@ namespace CinemaUI
         private readonly UserService _userService;
         private readonly BookingService _bookingService;
 
-
         public MainWindow()
         {
             InitializeComponent();
+
             var api = new ApiClient();
             _clientService = new ClientService(api);
             _sessionService = new SessionService(api);
             _userService = new UserService(api);
             _bookingService = new BookingService(api);
 
-            _ = LoadUsersAsync();
-            _ = LoadBookingsAsync();
+            // первичная загрузка
             _ = LoadClientsAsync();
             _ = LoadSessionsAsync();
+            _ = LoadUsersAsync();
+            _ = LoadBookingsAsync();
         }
 
-        private async Task LoadSessionsAsync()
+        // ==== Load методы ====
+
+        private async System.Threading.Tasks.Task LoadClientsAsync()
         {
-            List<SessionDto> list = await _sessionService.GetAllAsync();
-            SessionsGrid.ItemsSource = list;
+            var items = await _clientService.GetAllAsync();
+            ClientsGrid.ItemsSource = items;
         }
 
-        private async Task LoadClientsAsync()
+        private async System.Threading.Tasks.Task LoadSessionsAsync()
         {
-            var list = await _clientService.GetAllAsync();
-            ClientsGrid.ItemsSource = list;
+            var items = await _sessionService.GetAllAsync();
+            SessionsGrid.ItemsSource = items;
         }
 
-        private async Task LoadUsersAsync()
-    => UsersGrid.ItemsSource = await _userService.GetAllAsync();
-
-        private async Task LoadBookingsAsync()
-            => BookingsGrid.ItemsSource = await _bookingService.GetAllAsync();
-
-        private async void RefreshBtn_Click(object sender, RoutedEventArgs e)
-            => await LoadClientsAsync();
-
-        private async void AddBtn_Click(object sender, RoutedEventArgs e)
+        private async System.Threading.Tasks.Task LoadUsersAsync()
         {
-            // для примера просто добавим тестового
-            var dto = new ClientDto { Name = "Test", Login = "test", PasswordHash = "hash" };
+            var items = await _userService.GetAllAsync();
+            UsersGrid.ItemsSource = items;
+        }
+
+        private async System.Threading.Tasks.Task LoadBookingsAsync()
+        {
+            var items = await _bookingService.GetAllAsync();
+            BookingsGrid.ItemsSource = items;
+        }
+
+        // ==== Refresh кнопки ====
+
+        private async void RefreshClients_Click(object s, RoutedEventArgs e) => await LoadClientsAsync();
+        private async void RefreshSessions_Click(object s, RoutedEventArgs e) => await LoadSessionsAsync();
+        private async void RefreshUsers_Click(object s, RoutedEventArgs e) => await LoadUsersAsync();
+        private async void RefreshBookings_Click(object s, RoutedEventArgs e) => await LoadBookingsAsync();
+
+        // ==== Add кнопки ====
+
+        private async void AddClient_Click(object s, RoutedEventArgs e)
+        {
+            var dto = new ClientDto { Name = "NewClient", Login = "new", PasswordHash = "hash" };
             await _clientService.CreateAsync(dto);
             await LoadClientsAsync();
         }
 
-        // Клиенты
-        private async void RefreshClients_Click(object sender, RoutedEventArgs e)
-            => await LoadClientsAsync();
-
-        private async void AddClient_Click(object sender, RoutedEventArgs e)
-        {
-            // Здесь можно показать диалог или просто тестовую вставку:
-            var dto = new ClientDto { Name = "New", Login = "new", PasswordHash = "hash" };
-            await _clientService.CreateAsync(dto);
-            await LoadClientsAsync();
-        }
-
-        // Сеансы
-        private async void RefreshSessions_Click(object sender, RoutedEventArgs e)
-            => await LoadSessionsAsync();
-
-        private async void AddSession_Click(object sender, RoutedEventArgs e)
+        private async void AddSession_Click(object s, RoutedEventArgs e)
         {
             var dto = new SessionDto
             {
                 StartTime = DateTime.Now.AddHours(1),
-                MovieTitle = "Новый фильм",
-                AvailableSeats = 50
+                MovieTitle = "New Movie",
+                AvailableSeats = 100
             };
             await _sessionService.CreateAsync(dto);
             await LoadSessionsAsync();
         }
-        private async void RefreshUsers_Click(object s, RoutedEventArgs e)
-    => await LoadUsersAsync();
 
         private async void AddUser_Click(object s, RoutedEventArgs e)
         {
-            var dto = new UserDto { Username = "test", PasswordHash = "hash", Role = "User" };
+            var dto = new UserDto { Username = "newuser", PasswordHash = "hash", Role = "User" };
             await _userService.CreateAsync(dto);
             await LoadUsersAsync();
         }
 
-        private async void RefreshBookings_Click(object s, RoutedEventArgs e)
-            => await LoadBookingsAsync();
-
         private async void AddBooking_Click(object s, RoutedEventArgs e)
         {
+            // Проверяем выбранного клиента
+            if (ClientsGrid.SelectedItem is not ClientDto client)
+            {
+                MessageBox.Show("Сначала выберите клиента!");
+                return;
+            }
+            // Проверяем выбранный сеанс
+            if (SessionsGrid.SelectedItem is not SessionDto session)
+            {
+                MessageBox.Show("Сначала выберите сеанс!");
+                return;
+            }
+
+            // Вводим число билетов
+            string input = Interaction.InputBox(
+                "Сколько билетов хотите забронировать?",
+                "Новая бронь",
+                "1"                // значение по умолчанию
+            );
+
+            if (!int.TryParse(input, out int seats) || seats <= 0)
+            {
+                MessageBox.Show("Неверное количество билетов.");
+                return;
+            }
+
             var dto = new BookingDto
             {
-                ClientId = 1,
-                SessionId = 1,
-                SeatsBooked = 2,
+                ClientId = client.Id,
+                SessionId = session.Id,
+                SeatsBooked = seats,
                 BookingTime = DateTime.Now
             };
-            await _bookingService.CreateAsync(dto);
-            await LoadBookingsAsync();
+
+            var response = await _bookingService.CreateAsync(dto);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                MessageBox.Show($"Ошибка при создании бронирования:\n{response.StatusCode}\n{error}");
+            }
+            else
+            {
+                await LoadBookingsAsync();
+            }
         }
+
+
+
+        // ==== Edit/Delete ====
 
         private async void EditClient_Click(object s, RoutedEventArgs e)
         {
-            if (ClientsGrid.SelectedItem is not ClientDto selected) return;
-            // Клонируем DTO, чтобы не портить источник
-            var copy = new ClientDto
-            {
-                Id = selected.Id,
-                Name = selected.Name,
-                Login = selected.Login,
-                PasswordHash = selected.PasswordHash
-            };
+            if (ClientsGrid.SelectedItem is not ClientDto sel) return;
+            var copy = new ClientDto { Id = sel.Id, Name = sel.Name, Login = sel.Login, PasswordHash = sel.PasswordHash };
             var dlg = new ClientEditWindow(copy);
             if (dlg.ShowDialog() == true)
             {
@@ -144,18 +160,21 @@ namespace CinemaUI
 
         private async void DeleteClient_Click(object s, RoutedEventArgs e)
         {
-            if (ClientsGrid.SelectedItem is not ClientDto selected) return;
-            await _clientService.DeleteAsync(selected.Id);
+            if (ClientsGrid.SelectedItem is not ClientDto sel) return;
+            await _clientService.DeleteAsync(sel.Id);
             await LoadClientsAsync();
         }
-        // Клиенты
-        
 
-        // Сеансы
         private async void EditSession_Click(object s, RoutedEventArgs e)
         {
             if (SessionsGrid.SelectedItem is not SessionDto sel) return;
-            var copy = new SessionDto { Id = sel.Id, StartTime = sel.StartTime, MovieTitle = sel.MovieTitle, AvailableSeats = sel.AvailableSeats };
+            var copy = new SessionDto
+            {
+                Id = sel.Id,
+                StartTime = sel.StartTime,
+                MovieTitle = sel.MovieTitle,
+                AvailableSeats = sel.AvailableSeats
+            };
             var dlg = new SessionEditWindow(copy);
             if (dlg.ShowDialog() == true)
             {
@@ -171,7 +190,6 @@ namespace CinemaUI
             await LoadSessionsAsync();
         }
 
-        // Пользователи
         private async void EditUser_Click(object s, RoutedEventArgs e)
         {
             if (UsersGrid.SelectedItem is not UserDto sel) return;
@@ -191,7 +209,6 @@ namespace CinemaUI
             await LoadUsersAsync();
         }
 
-        // Бронирования
         private async void EditBooking_Click(object s, RoutedEventArgs e)
         {
             if (BookingsGrid.SelectedItem is not BookingDto sel) return;
@@ -217,7 +234,5 @@ namespace CinemaUI
             await _bookingService.DeleteAsync(sel.Id);
             await LoadBookingsAsync();
         }
-
     }
-
 }
