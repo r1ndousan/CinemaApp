@@ -9,7 +9,9 @@
                 <DockPanel Margin="5">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,5">
                         <Button Content="Обновить" Click="RefreshClients_Click" Margin="0,0,5,0"/>
-                        <Button Content="Добавить"  Click="AddClient_Click"/>
+                        <Button Content="Добавить"  Click="AddClient_Click"    Margin="0,0,5,0"/>
+                        <Button Content="Изменить"  Click="EditClient_Click"   Margin="0,0,312,0"/>
+                        <Button Content="Удалить"   Click="DeleteClient_Click"/>
                     </StackPanel>
                     <DataGrid x:Name="ClientsGrid" AutoGenerateColumns="False" IsReadOnly="True">
                         <DataGrid.Columns>
@@ -25,7 +27,9 @@
                 <DockPanel Margin="5">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,5">
                         <Button Content="Обновить" Click="RefreshSessions_Click" Margin="0,0,5,0"/>
-                        <Button Content="Добавить"  Click="AddSession_Click"/>
+                        <Button Content="Добавить"  Click="AddSession_Click" Margin="0,0,5,0"/>
+                        <Button Content="Изменить"  Click="EditSession_Click"   Margin="0,0,312,0"/>
+                        <Button Content="Удалить"   Click="DeleteSession_Click"/>
                     </StackPanel>
                     <DataGrid x:Name="SessionsGrid" AutoGenerateColumns="False" IsReadOnly="True">
                         <DataGrid.Columns>
@@ -43,8 +47,10 @@
             <DockPanel Margin="5">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,5">
                     <Button Content="Обновить" Click="RefreshUsers_Click" Margin="0,0,5,0"/>
-                    <Button Content="Добавить"  Click="AddUser_Click"/>
-                </StackPanel>
+                    <Button Content="Добавить"  Click="AddUser_Click" Margin="0,0,5,0"/>
+                    <Button Content="Изменить"  Click="EditUser_Click"   Margin="0,0,312,0"/>
+                    <Button Content="Удалить"   Click="DeleteUser_Click"/>
+                    </StackPanel>
                 <DataGrid x:Name="UsersGrid" AutoGenerateColumns="False" IsReadOnly="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Id"       Binding="{Binding Id}"       Width="50"/>
@@ -59,15 +65,17 @@
             <DockPanel Margin="5">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,5">
                     <Button Content="Обновить" Click="RefreshBookings_Click" Margin="0,0,5,0"/>
-                    <Button Content="Добавить"  Click="AddBooking_Click"/>
-                </StackPanel>
+                        <Button Content="Добавить"  Click="AddBooking_Click" Margin="0,0,5,0"/>
+                        <Button Content="Изменить"  Click="EditBooking_Click"   Margin="0,0,312,0"/>
+                        <Button Content="Удалить"   Click="DeleteBooking_Click"/>
+                    </StackPanel>
                 <DataGrid x:Name="BookingsGrid" AutoGenerateColumns="False" IsReadOnly="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Id"          Binding="{Binding Id}"          Width="50"/>
                         <DataGridTextColumn Header="Id клиента"    Binding="{Binding ClientId}"    Width="75"/>
                         <DataGridTextColumn Header="Id сеанса"   Binding="{Binding SessionId}"   Width="75"/>
                         <DataGridTextColumn Header="Забронированно мест" Binding="{Binding SeatsBooked}" Width="150"/>
-                        <DataGridTextColumn Header="Время брони"        Binding="{Binding BookingTime}" Width="150"/>
+                        <DataGridTextColumn Header="Время брони"        Binding="{Binding BookingTime}" Width="195"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </DockPanel>

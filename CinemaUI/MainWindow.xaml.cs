@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using CinemaUI.Models;
 using CinemaUI.Services;
 using CinemaUI.Services.CinemaUI.Services;
+using CinemaUI.Dialogs;
 
 
 namespace CinemaUI
@@ -119,6 +120,101 @@ namespace CinemaUI
                 BookingTime = DateTime.Now
             };
             await _bookingService.CreateAsync(dto);
+            await LoadBookingsAsync();
+        }
+
+        private async void EditClient_Click(object s, RoutedEventArgs e)
+        {
+            if (ClientsGrid.SelectedItem is not ClientDto selected) return;
+            // Клонируем DTO, чтобы не портить источник
+            var copy = new ClientDto
+            {
+                Id = selected.Id,
+                Name = selected.Name,
+                Login = selected.Login,
+                PasswordHash = selected.PasswordHash
+            };
+            var dlg = new ClientEditWindow(copy);
+            if (dlg.ShowDialog() == true)
+            {
+                await _clientService.UpdateAsync(copy.Id, copy);
+                await LoadClientsAsync();
+            }
+        }
+
+        private async void DeleteClient_Click(object s, RoutedEventArgs e)
+        {
+            if (ClientsGrid.SelectedItem is not ClientDto selected) return;
+            await _clientService.DeleteAsync(selected.Id);
+            await LoadClientsAsync();
+        }
+        // Клиенты
+        
+
+        // Сеансы
+        private async void EditSession_Click(object s, RoutedEventArgs e)
+        {
+            if (SessionsGrid.SelectedItem is not SessionDto sel) return;
+            var copy = new SessionDto { Id = sel.Id, StartTime = sel.StartTime, MovieTitle = sel.MovieTitle, AvailableSeats = sel.AvailableSeats };
+            var dlg = new SessionEditWindow(copy);
+            if (dlg.ShowDialog() == true)
+            {
+                await _sessionService.UpdateAsync(copy.Id, copy);
+                await LoadSessionsAsync();
+            }
+        }
+
+        private async void DeleteSession_Click(object s, RoutedEventArgs e)
+        {
+            if (SessionsGrid.SelectedItem is not SessionDto sel) return;
+            await _sessionService.DeleteAsync(sel.Id);
+            await LoadSessionsAsync();
+        }
+
+        // Пользователи
+        private async void EditUser_Click(object s, RoutedEventArgs e)
+        {
+            if (UsersGrid.SelectedItem is not UserDto sel) return;
+            var copy = new UserDto { Id = sel.Id, Username = sel.Username, PasswordHash = sel.PasswordHash, Role = sel.Role };
+            var dlg = new UserEditWindow(copy);
+            if (dlg.ShowDialog() == true)
+            {
+                await _userService.UpdateAsync(copy.Id, copy);
+                await LoadUsersAsync();
+            }
+        }
+
+        private async void DeleteUser_Click(object s, RoutedEventArgs e)
+        {
+            if (UsersGrid.SelectedItem is not UserDto sel) return;
+            await _userService.DeleteAsync(sel.Id);
+            await LoadUsersAsync();
+        }
+
+        // Бронирования
+        private async void EditBooking_Click(object s, RoutedEventArgs e)
+        {
+            if (BookingsGrid.SelectedItem is not BookingDto sel) return;
+            var copy = new BookingDto
+            {
+                Id = sel.Id,
+                ClientId = sel.ClientId,
+                SessionId = sel.SessionId,
+                SeatsBooked = sel.SeatsBooked,
+                BookingTime = sel.BookingTime
+            };
+            var dlg = new BookingEditWindow(copy);
+            if (dlg.ShowDialog() == true)
+            {
+                await _bookingService.UpdateAsync(copy.Id, copy);
+                await LoadBookingsAsync();
+            }
+        }
+
+        private async void DeleteBooking_Click(object s, RoutedEventArgs e)
+        {
+            if (BookingsGrid.SelectedItem is not BookingDto sel) return;
+            await _bookingService.DeleteAsync(sel.Id);
             await LoadBookingsAsync();
         }
 
