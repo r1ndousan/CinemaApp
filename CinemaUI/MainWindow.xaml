@@ -3,17 +3,41 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Клиенты" Height="350" Width="600">
     <DockPanel Margin="10">
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,10">
-            <Button x:Name="RefreshBtn" Content="Обновить" Width="80" Margin="0,0,10,0" Click="RefreshBtn_Click"/>
-            <Button x:Name="AddBtn"     Content="Добавить" Width="80" Click="AddBtn_Click"/>
-        </StackPanel>
-        <DataGrid x:Name="ClientsGrid" AutoGenerateColumns="False" IsReadOnly="True">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Id"    Binding="{Binding Id}"    Width="50"/>
-                <DataGridTextColumn Header="Name"  Binding="{Binding Name}"  Width="*"/>
-                <DataGridTextColumn Header="Login" Binding="{Binding Login}" Width="*"/>
-            </DataGrid.Columns>
-        </DataGrid>
+        <TabControl x:Name="MainTab" Margin="10">
+            <!-- Вкладка Клиенты -->
+            <TabItem Header="Клиенты">
+                <DockPanel Margin="5">
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,5">
+                        <Button Content="Обновить" Click="RefreshClients_Click" Margin="0,0,5,0"/>
+                        <Button Content="Добавить"  Click="AddClient_Click"/>
+                    </StackPanel>
+                    <DataGrid x:Name="ClientsGrid" AutoGenerateColumns="False" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Id"    Binding="{Binding Id}"    Width="50"/>
+                            <DataGridTextColumn Header="Name"  Binding="{Binding Name}"  Width="*"/>
+                            <DataGridTextColumn Header="Login" Binding="{Binding Login}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
+            <!-- Вкладка Сеансы -->
+            <TabItem Header="Сеансы">
+                <DockPanel Margin="5">
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,5">
+                        <Button Content="Обновить" Click="RefreshSessions_Click" Margin="0,0,5,0"/>
+                        <Button Content="Добавить"  Click="AddSession_Click"/>
+                    </StackPanel>
+                    <DataGrid x:Name="SessionsGrid" AutoGenerateColumns="False" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Id"             Binding="{Binding Id}"             Width="50"/>
+                            <DataGridTextColumn Header="Начало"         Binding="{Binding StartTime}"      Width="150"/>
+                            <DataGridTextColumn Header="Название фильма" Binding="{Binding MovieTitle}"    Width="*"/>
+                            <DataGridTextColumn Header="Свободных мест"  Binding="{Binding AvailableSeats}" Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
+        </TabControl>
     </DockPanel>
 </Window>
 
