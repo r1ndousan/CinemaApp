@@ -8,6 +8,9 @@ namespace CinemaConsole.Data
     {
         public DbSet<Client> Clients { get; set; }
         public DbSet<Session> Sessions { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Booking> Bookings { get; set; }
+
 
         private readonly string? _connectionString;
 
@@ -36,6 +39,9 @@ namespace CinemaConsole.Data
         {
             modelBuilder.ApplyConfiguration(new ClientConfiguration());
             modelBuilder.ApplyConfiguration(new SessionConfiguration());
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new BookingConfiguration());
         }
+
     }
 }
