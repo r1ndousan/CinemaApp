@@ -19,7 +19,21 @@ namespace CinemaConsole.Data.Repositories.Ef
         {
             _ctx = context;
         }
+        public async Task<IReadOnlyList<Session>> FindSessionsAsync(DateTime? from, DateTime? to, string? movieFilter)
+        {
+            IQueryable<Session> q = _ctx.Sessions.AsNoTracking();
 
+            if (from.HasValue)
+                q = q.Where(s => s.StartTime >= from.Value);
+
+            if (to.HasValue)
+                q = q.Where(s => s.StartTime <= to.Value);
+
+            if (!string.IsNullOrWhiteSpace(movieFilter))
+                q = q.Where(s => s.MovieTitle.Contains(movieFilter));
+
+            return await q.ToListAsync();
+        }
         public async Task AddSessionAsync(Session session)
         {
             await _ctx.Sessions.AddAsync(session);

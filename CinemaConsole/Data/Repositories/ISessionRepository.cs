@@ -15,6 +15,7 @@ namespace CinemaConsole.Data.Repositories
         Task UpdateSessionAsync(Session session);
         Task DeleteSessionAsync(int id);
         // При желании: Task<IEnumerable<Session>> GetSessionsByDateAsync(DateTime date);
+        Task<IReadOnlyList<Session>> FindSessionsAsync(DateTime? from, DateTime? to, string? movie);
     }
 }
 

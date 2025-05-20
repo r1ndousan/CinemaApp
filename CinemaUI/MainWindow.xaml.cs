@@ -34,28 +34,7 @@ namespace CinemaUI
             _ = LoadSessionsAsync();
             _ = LoadBookingsAsync();
         }
-
-        // ==== Load методы ====
-
-        private async System.Threading.Tasks.Task LoadClientsAsync()
-        {
-            var items = await _clientService.GetAllAsync();
-            ClientsGrid.ItemsSource = items;
-        }
-
-        private async System.Threading.Tasks.Task LoadSessionsAsync()
-        {
-            var items = await _sessionService.GetAllAsync();
-            SessionsGrid.ItemsSource = items;
-        }
-
-
-
-        private async System.Threading.Tasks.Task LoadBookingsAsync()
-        {
-            var items = await _bookingService.GetAllAsync();
-            BookingsGrid.ItemsSource = items;
-        }
+     
 
         // ==== Refresh кнопки ====
 
@@ -208,5 +187,79 @@ namespace CinemaUI
             await _bookingService.DeleteAsync(sel.Id);
             await LoadBookingsAsync();
         }
+
+        private async Task LoadClientsAsync()
+        {
+            var name = ClientNameFilter.Text;
+            var login = ClientLoginFilter.Text;
+            List<ClientDto> list;
+            if (string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(login))
+            {
+                // Без фильтра — получаем всех
+                list = await _clientService.GetAllAsync();
+            }
+            else
+            {
+                // С фильтром
+                list = await _clientService.FindAsync(name, login);
+            }
+
+            ClientsGrid.ItemsSource = list;
+        }
+
+        private void ResetClientsFilter_Click(object s, RoutedEventArgs e)
+        {
+            ClientNameFilter.Clear();
+            ClientLoginFilter.Clear();
+            _ = LoadClientsAsync();
+        }
+
+        // Сеансы
+        private async Task LoadSessionsAsync()
+        {
+            var from = SessionFromFilter.SelectedDate;
+            var to = SessionToFilter.SelectedDate;
+            var movie = SessionMovieFilter.Text;
+
+            List<SessionDto> list;
+            if (from == null && to == null && string.IsNullOrWhiteSpace(movie))
+                list = await _sessionService.GetAllAsync();
+            else
+                list = await _sessionService.FindAsync(from, to, movie);
+
+            SessionsGrid.ItemsSource = list;
+        }
+
+        private void ResetSessionsFilter_Click(object s, RoutedEventArgs e)
+        {
+            SessionFromFilter.SelectedDate = null;
+            SessionToFilter.SelectedDate = null;
+            SessionMovieFilter.Clear();
+            _ = LoadSessionsAsync();
+        }
+
+
+        // Бронирования
+        private async Task LoadBookingsAsync()
+        {
+            int? cid = int.TryParse(BookingClientFilter.Text, out var a) ? a : null;
+            int? sid = int.TryParse(BookingSessionFilter.Text, out var b) ? b : null;
+
+            List<BookingDto> list;
+            if (cid == null && sid == null)
+                list = await _bookingService.GetAllAsync();
+            else
+                list = await _bookingService.FindAsync(cid, sid);
+
+            BookingsGrid.ItemsSource = list;
+        }
+
+        private void ResetBookingsFilter_Click(object s, RoutedEventArgs e)
+        {
+            BookingClientFilter.Clear();
+            BookingSessionFilter.Clear();
+            _ = LoadBookingsAsync();
+        }
+
     }
 }

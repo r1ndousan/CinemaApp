@@ -16,7 +16,21 @@ namespace CinemaConsole.Data.Repositories.Ef
         {
             _ctx = context;
         }
+        public async Task<IReadOnlyList<Booking>> FindBookingsAsync(int? clientId, int? sessionId)
+        {
+            IQueryable<Booking> q = _ctx.Bookings
+                .Include(b => b.Client)
+                .Include(b => b.Session)
+                .AsNoTracking();
 
+            if (clientId.HasValue)
+                q = q.Where(b => b.ClientId == clientId.Value);
+
+            if (sessionId.HasValue)
+                q = q.Where(b => b.SessionId == sessionId.Value);
+
+            return await q.ToListAsync();
+        }
         public async Task AddBookingAsync(Booking booking)
         {
             await _ctx.Bookings.AddAsync(booking);

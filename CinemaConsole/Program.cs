@@ -213,12 +213,57 @@ app.MapPost("/auth/login", async (LoginRequest creds, IUserRepository repo) =>
     return Results.Ok(new { token = jwtString });
 });
 
-app.MapGet("/clients", async (IClientRepository repo) =>
-        Results.Ok(await repo.GetAllClientsAsync())).RequireAuthorization();
-app.MapGet("/sessions", async (ISessionRepository repo) =>
-        Results.Ok(await repo.GetAllSessionsAsync())).RequireAuthorization();
-app.MapGet("/bookings", async (IBookingRepository repo) =>
-        Results.Ok(await repo.GetAllBookingsAsync())).RequireAuthorization();
+
+
+
+// Клиенты: ?name=&login=
+app.MapGet("/clients", async (
+    string? name,
+    string? login,
+    IClientRepository repo) =>
+{
+    var list = string.IsNullOrWhiteSpace(name)
+        && string.IsNullOrWhiteSpace(login)
+      ? await repo.GetAllClientsAsync()
+      : await repo.FindClientsAsync(name, login);
+    return Results.Ok(list);
+})
+.RequireAuthorization();
+
+// Сеансы: ?from=&to=&movie=
+app.MapGet("/sessions", async (
+    DateTime? from,
+    DateTime? to,
+    string? movie,
+    ISessionRepository repo) =>
+{
+    var list = (from, to, movie) switch
+    {
+        ({ }, { }, null or "")
+            => await repo.FindSessionsAsync(from, to, null),
+        ({ }, { }, _)
+            => await repo.FindSessionsAsync(from, to, movie),
+        _ => await repo.GetAllSessionsAsync()
+    };
+    return Results.Ok(list);
+})
+.RequireAuthorization();
+
+
+// Бронирования: ?clientId=&sessionId=
+app.MapGet("/bookings", async (
+    int? clientId,
+    int? sessionId,
+    IBookingRepository repo) =>
+{
+    var list = (clientId, sessionId) switch
+    {
+        (null, null) => await repo.GetAllBookingsAsync(),
+        _ => await repo.FindBookingsAsync(clientId, sessionId)
+    };
+    return Results.Ok(list);
+})
+.RequireAuthorization();
 
 
 app.Run("http://localhost:5000");

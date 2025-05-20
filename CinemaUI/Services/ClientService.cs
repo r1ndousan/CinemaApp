@@ -29,6 +29,10 @@ namespace CinemaUI.Services
 
         public Task<HttpResponseMessage> DeleteAsync(int id) =>
             _http.DeleteAsync($"clients/{id}");
+
+        public Task<List<ClientDto>> FindAsync(string name, string login) =>
+    _http.GetFromJsonAsync<List<ClientDto>>(
+      $"clients?name={Uri.EscapeDataString(name)}&login={Uri.EscapeDataString(login)}")!;
     }
 }
 

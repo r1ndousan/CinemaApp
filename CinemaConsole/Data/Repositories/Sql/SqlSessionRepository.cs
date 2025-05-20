@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using CinemaConsole.Data.Entities;
 using CinemaConsole.Data.Repositories;
+using System.Text;
 
 namespace CinemaConsole.Data.Repositories.Sql
 {
@@ -97,6 +98,46 @@ namespace CinemaConsole.Data.Repositories.Sql
             cmd.Parameters.AddWithValue("@Id", id);
             await conn.OpenAsync();
             await cmd.ExecuteNonQueryAsync();
+        }
+        public async Task<IReadOnlyList<Session>> FindSessionsAsync(DateTime? from, DateTime? to, string? movieFilter)
+        {
+            var sql = new StringBuilder("SELECT Id, StartTime, MovieTitle, AvailableSeats FROM Sessions WHERE 1=1");
+            var prms = new List<SqlParameter>();
+
+            if (from.HasValue)
+            {
+                sql.Append(" AND StartTime >= @from");
+                prms.Add(new SqlParameter("@from", from.Value));
+            }
+            if (to.HasValue)
+            {
+                sql.Append(" AND StartTime <= @to");
+                prms.Add(new SqlParameter("@to", to.Value));
+            }
+            if (!string.IsNullOrWhiteSpace(movieFilter))
+            {
+                sql.Append(" AND MovieTitle LIKE @mv");
+                prms.Add(new SqlParameter("@mv", $"%{movieFilter}%"));
+            }
+
+            await using var conn = new SqlConnection(_cs);
+            await using var cmd = new SqlCommand(sql.ToString(), conn);
+            cmd.Parameters.AddRange(prms.ToArray());
+            await conn.OpenAsync();
+
+            var list = new List<Session>();
+            await using var rdr = await cmd.ExecuteReaderAsync();
+            while (await rdr.ReadAsync())
+            {
+                list.Add(new Session
+                {
+                    Id = rdr.GetInt32(0),
+                    StartTime = rdr.GetDateTime(1),
+                    MovieTitle = rdr.GetString(2),
+                    AvailableSeats = rdr.GetInt32(3)
+                });
+            }
+            return list;
         }
     }
 }

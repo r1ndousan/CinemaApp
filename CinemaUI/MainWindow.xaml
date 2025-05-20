@@ -8,10 +8,19 @@
             <TabItem Header="Клиенты">
                 <DockPanel Margin="5">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,5">
-                        <Button Content="Обновить" Click="RefreshClients_Click" Margin="0,0,5,0"/>
+                       
                         <Button Content="Добавить"  Click="AddClient_Click"    Margin="0,0,5,0"/>
-                        <Button Content="Изменить"  Click="EditClient_Click"   Margin="0,0,280,0"/>
+                        <Button Content="Изменить"  Click="EditClient_Click"   Margin="0,0,5,0"/>
                         <Button Content="Удалить"   Click="DeleteClient_Click"/>
+                        
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="5">
+                        <TextBlock Text="Имя:" VerticalAlignment="Center"/>
+                        <TextBox x:Name="ClientNameFilter" Width="120" Margin="5,0"/>
+                        <TextBlock Text="Логин:" VerticalAlignment="Center"/>
+                        <TextBox x:Name="ClientLoginFilter" Width="120" Margin="5,0"/>
+                        <Button Content="Применить" Click="RefreshClients_Click" Margin="10,0"/>
+                        <Button Content="Сброс" Click="ResetClientsFilter_Click" Margin="5,0"/>
                     </StackPanel>
                     <DataGrid x:Name="ClientsGrid" AutoGenerateColumns="False" IsReadOnly="True">
                         <DataGrid.Columns>
@@ -26,10 +35,21 @@
             <TabItem Header="Сеансы">
                 <DockPanel Margin="5">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,5">
-                        <Button Content="Обновить" Click="RefreshSessions_Click" Margin="0,0,5,0"/>
+                        
                         <Button Content="Добавить"  Click="AddSession_Click" Margin="0,0,5,0"/>
-                        <Button Content="Изменить"  Click="EditSession_Click"   Margin="0,0,280,0"/>
+                        <Button Content="Изменить"  Click="EditSession_Click"   Margin="0,0,5,0"/>
                         <Button Content="Удалить"   Click="DeleteSession_Click"/>
+                        
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="5">
+                        <TextBlock Text="От:" VerticalAlignment="Center"/>
+                        <DatePicker x:Name="SessionFromFilter" Width="120" Margin="5,0"/>
+                        <TextBlock Text="До:" VerticalAlignment="Center"/>
+                        <DatePicker x:Name="SessionToFilter" Width="120" Margin="5,0"/>
+                        <TextBlock Text="Фильм:" VerticalAlignment="Center"/>
+                        <TextBox x:Name="SessionMovieFilter" Width="120" Margin="5,0"/>
+                        <Button Content="Применить" Click="RefreshSessions_Click" Margin="10,0"/>
+                        <Button Content="Сброс" Click="ResetSessionsFilter_Click" Margin="5,0"/>
                     </StackPanel>
                     <DataGrid x:Name="SessionsGrid" AutoGenerateColumns="False" IsReadOnly="True">
                         <DataGrid.Columns>
@@ -45,12 +65,20 @@
             <TabItem Header="Бронирования">
             <DockPanel Margin="5">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,5">
-                    <Button Content="Обновить" Click="RefreshBookings_Click" Margin="0,0,5,0"/>
-                        <Button Content="Добавить"  Click="AddBooking_Click" Margin="0,0,5,0"/>
-                        <Button Content="Изменить"  Click="EditBooking_Click"   Margin="0,0,280,0"/>
+                    
+                        <Button Content="Добавить"  Click="AddBooking_Click" Margin="0,0,10,0"/>
+                        <Button Content="Изменить"  Click="EditBooking_Click"   Margin="0,0,10,0" />
                         <Button Content="Удалить"   Click="DeleteBooking_Click"/>
                     </StackPanel>
-                <DataGrid x:Name="BookingsGrid" AutoGenerateColumns="False" IsReadOnly="True">
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="5">
+                        <TextBlock Text="Клиент ID:" VerticalAlignment="Center"/>
+                        <TextBox x:Name="BookingClientFilter" Width="60" Margin="5,0"/>
+                        <TextBlock Text="Сеанс ID:" VerticalAlignment="Center"/>
+                        <TextBox x:Name="BookingSessionFilter" Width="60" Margin="5,0"/>
+                        <Button Content="Применить" Click="RefreshBookings_Click" Margin="10,0"/>
+                        <Button Content="Сброс" Click="ResetBookingsFilter_Click" Margin="5,0"/>
+                    </StackPanel>
+                    <DataGrid x:Name="BookingsGrid" AutoGenerateColumns="False" IsReadOnly="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Id"          Binding="{Binding Id}"          Width="50"/>
                         <DataGridTextColumn Header="Id клиента"    Binding="{Binding ClientId}"    Width="75"/>

@@ -32,5 +32,13 @@ namespace CinemaUI.Services
             // Убираем лишний слэш, используем именно bookings/{id}
             return _http.DeleteAsync($"bookings/{id}");
         }
+        public Task<List<BookingDto>> FindAsync(int? clientId, int? sessionId)
+        {
+            var qs = new List<string>();
+            if (clientId.HasValue) qs.Add("clientId=" + clientId.Value);
+            if (sessionId.HasValue) qs.Add("sessionId=" + sessionId.Value);
+            var query = qs.Count > 0 ? "?" + string.Join("&", qs) : "";
+            return _http.GetFromJsonAsync<List<BookingDto>>($"bookings{query}")!;
+        }
     }
 }

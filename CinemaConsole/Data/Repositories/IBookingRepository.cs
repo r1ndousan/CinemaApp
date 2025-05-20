@@ -17,5 +17,6 @@ namespace CinemaConsole.Data.Repositories
         Task<IEnumerable<Booking>> GetAllBookingsAsync();
         Task UpdateBookingAsync(Booking booking);
         Task DeleteBookingAsync(int id);
+        Task<IReadOnlyList<Booking>> FindBookingsAsync(int? clientId, int? sessionId);
     }
 }

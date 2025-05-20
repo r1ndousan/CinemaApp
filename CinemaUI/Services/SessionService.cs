@@ -30,6 +30,15 @@ namespace CinemaUI.Services
 
         public Task<HttpResponseMessage> DeleteAsync(int id) =>
             _http.DeleteAsync($"sessions/{id}");
+        public Task<List<SessionDto>> FindAsync(DateTime? from, DateTime? to, string movie)
+        {
+            var qs = new List<string>();
+            if (from.HasValue) qs.Add("from=" + Uri.EscapeDataString(from.Value.ToString("o")));
+            if (to.HasValue) qs.Add("to=" + Uri.EscapeDataString(to.Value.ToString("o")));
+            if (!string.IsNullOrWhiteSpace(movie)) qs.Add("movie=" + Uri.EscapeDataString(movie));
+            var query = qs.Count > 0 ? "?" + string.Join("&", qs) : "";
+            return _http.GetFromJsonAsync<List<SessionDto>>($"sessions{query}")!;
+        }
     }
 }
 
