@@ -1,0 +1,19 @@
+﻿<Window x:Class="CinemaUI.Dialogs.SessionEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Редактировать сеанс" Height="316" Width="372">
+    <StackPanel Margin="10" VerticalAlignment="Center">
+        <TextBlock Text="Дата:"/>
+        <DatePicker x:Name="DatePicker" Margin="0,0,0,5"/>
+        <TextBlock Text="Время:"/>
+        <TextBox   x:Name="TimeBox"     Margin="0,0,0,5"/>
+        <TextBlock Text="Название фильма:"/>
+        <TextBox   x:Name="TitleBox"    Margin="0,0,0,5"/>
+        <TextBlock Text="Свободных мест:"/>
+        <TextBox   x:Name="SeatsBox"    Margin="0,0,0,10"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="OK"    Width="60" Margin="0,0,5,0" Click="Ok_Click"/>
+            <Button Content="Отмена" Width="60" Click="Cancel_Click"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

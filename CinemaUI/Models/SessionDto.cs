@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CinemaConsole.Data
+namespace CinemaUI.Models
 {
-    public class Session
+
+    public class SessionDto
     {
         public int Id { get; set; }
-        public DateTime Time { get; set; }
-        public string MovieTitle { get; set; }
+        public DateTime StartTime { get; set; }
+        public string MovieTitle { get; set; } = "";
         public int AvailableSeats { get; set; }
     }
 }
