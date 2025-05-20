@@ -28,4 +28,5 @@ namespace CinemaUI.Services
             return _http.PostAsJsonAsync("auth/register", req);
         }
     }
+
 }

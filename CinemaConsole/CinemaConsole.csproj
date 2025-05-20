@@ -30,6 +30,8 @@
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
 	  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
 	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.10.0" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.5" />
+
   </ItemGroup>
 
   <ItemGroup>

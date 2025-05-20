@@ -41,7 +41,18 @@ var cs = builder.Configuration.GetConnectionString("CinemaDb");
 builder.Services.AddDbContext<CinemaDbContext>(opt =>
     opt.UseSqlServer(cs));
 
-
+if (!builder.Environment.IsEnvironment("Test"))
+{
+    // Реальный продовый/локальный режим
+    builder.Services.AddDbContext<CinemaDbContext>(opts =>
+        opts.UseSqlServer(builder.Configuration.GetConnectionString("CinemaDb")));
+}
+else
+{
+    // Режим тестирования: InMemory
+    builder.Services.AddDbContext<CinemaDbContext>(opts =>
+        opts.UseInMemoryDatabase("TestDb"));
+}
 
 // ---- 2) Репозитории ----
 builder.Services.AddScoped<IClientRepository, EfClientRepository>();
@@ -267,3 +278,4 @@ app.MapGet("/bookings", async (
 
 
 app.Run("http://localhost:5000");
+public partial class Program { }

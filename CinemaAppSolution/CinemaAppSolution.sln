@@ -9,7 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CinemaConsole", "..\CinemaC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CinemaUI", "..\CinemaUI\CinemaUI.csproj", "{D32629FA-9817-4D19-A147-56426ED67844}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CinemaTests", "..\CinemaTests\CinemaTests.csproj", "{4847DD7B-EDE0-4DAF-98EC-3AD1612911EB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CinemaTests", "..\CinemaTests\CinemaTests.csproj", "{79210B30-0904-49C2-A034-DDA2F4ACCB96}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5DD1643D-BB9E-4C3C-9C6A-844FB3A34C51} = {5DD1643D-BB9E-4C3C-9C6A-844FB3A34C51}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +32,10 @@ Global
 		{D32629FA-9817-4D19-A147-56426ED67844}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D32629FA-9817-4D19-A147-56426ED67844}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D32629FA-9817-4D19-A147-56426ED67844}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4847DD7B-EDE0-4DAF-98EC-3AD1612911EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4847DD7B-EDE0-4DAF-98EC-3AD1612911EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4847DD7B-EDE0-4DAF-98EC-3AD1612911EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4847DD7B-EDE0-4DAF-98EC-3AD1612911EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79210B30-0904-49C2-A034-DDA2F4ACCB96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79210B30-0904-49C2-A034-DDA2F4ACCB96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79210B30-0904-49C2-A034-DDA2F4ACCB96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79210B30-0904-49C2-A034-DDA2F4ACCB96}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
