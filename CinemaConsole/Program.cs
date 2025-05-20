@@ -152,7 +152,12 @@ app.MapPost("/bookings", async (Booking b, IBookingRepository repo, CommandDispa
     return Results.Created($"/bookings/{b.Id}", b);
 });
 
-
+app.MapDelete("/bookings/{id:int}", async (int id, IBookingRepository repo) =>
+{
+    await repo.DeleteBookingAsync(id);
+    return Results.NoContent();
+})
+.RequireAuthorization();
 // PUT и DELETE — аналогично
 
 
@@ -161,12 +166,12 @@ app.MapPost("/bookings", async (Booking b, IBookingRepository repo, CommandDispa
 app.MapPost("/auth/register", async (AuthRequestDto dto, IUserRepository repo) =>
 {
     // хешируем пароль (рекомендуется)
-    dto.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+    var hash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
     var user = new User
     {
         Username = dto.Username,
-        PasswordHash = dto.Password,
+        PasswordHash = hash,
         Role = "User"
     };
 
@@ -180,7 +185,12 @@ app.UseAuthorization();
 app.MapPost("/auth/login", async (LoginRequest creds, IUserRepository repo) =>
 {
     var user = await repo.GetUserByUsernameAsync(creds.Username);
-    if (user is null || user.PasswordHash != creds.Password)
+    if (user is null)
+        return Results.Unauthorized();
+
+    // Правильная проверка хеша:
+    bool ok = BCrypt.Net.BCrypt.Verify(creds.Password, user.PasswordHash);
+    if (!ok)
         return Results.Unauthorized();
 
     var claims = new[]

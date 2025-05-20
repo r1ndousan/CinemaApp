@@ -32,7 +32,6 @@ namespace CinemaUI
         {
             Client.Name = NameBox.Text;
             Client.Login = LoginBox.Text;
-            Client.PasswordHash = PassBox.Password;
             DialogResult = true;
         }
 

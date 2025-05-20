@@ -27,7 +27,10 @@ namespace CinemaUI.Services
         public Task<HttpResponseMessage> UpdateAsync(int id, BookingDto dto) =>
             _http.PutAsJsonAsync($"bookings/{id}", dto);
 
-        public Task<HttpResponseMessage> DeleteAsync(int id) =>
-            _http.DeleteAsync($"bookings/{id}");
+        public Task<HttpResponseMessage> DeleteAsync(int id)
+        {
+            // Убираем лишний слэш, используем именно bookings/{id}
+            return _http.DeleteAsync($"bookings/{id}");
+        }
     }
 }

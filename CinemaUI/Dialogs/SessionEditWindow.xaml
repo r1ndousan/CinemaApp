@@ -5,7 +5,7 @@
     <StackPanel Margin="10" VerticalAlignment="Center">
         <TextBlock Text="Дата:"/>
         <DatePicker x:Name="DatePicker" Margin="0,0,0,5"/>
-        <TextBlock Text="Время (HH:mm):"/>
+        <TextBlock Text="Время:"/>
         <TextBox   x:Name="TimeBox"     Margin="0,0,0,5"/>
         <TextBlock Text="Название фильма:"/>
         <TextBox   x:Name="TitleBox"    Margin="0,0,0,5"/>
